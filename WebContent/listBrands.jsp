@@ -34,7 +34,7 @@
 							<th>BrandName</th>
 							<th>Website</th>
 							<th>Country</th>
-							<th colspan="2">Action</th>
+							<th colspan="3">Action</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -50,7 +50,10 @@
 
 								<td><a
 									href="BrandTableController.do?action=delete&brandId=<c:out value="${brand.getBrandId() }"/>"><button
-											type="button" class="btn btn-primary">Delete</button></a></td>
+											type="button" class="btn btn-danger">Delete</button></a></td>
+								<td><a
+									href="ShoesTableController.do?action=list&brandId=<c:out value="${brand.getBrandId() }"/>"><button
+											type="button" class="btn btn-primary">Shoes List</button></a></td>
 
 							</tr>
 						</c:forEach>

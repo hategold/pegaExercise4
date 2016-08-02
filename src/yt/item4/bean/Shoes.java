@@ -1,4 +1,4 @@
-package yt.item4;
+package yt.item4.bean;
 
 public class Shoes {
 
@@ -8,14 +8,18 @@ public class Shoes {
 
 	private String series;
 
-	private String catagory;
+	private String category;
 
 	private int price;
 
 	private Brand brand;
-
-	public Shoes() {
-
+	
+	public Shoes(){
+		
+	}
+	
+	public Shoes(String shoesName) {
+		setShoesName(shoesName);
 	}
 
 	public int getShoesId() {
@@ -45,12 +49,12 @@ public class Shoes {
 		return this;
 	}
 
-	public String getCatagory() {
-		return catagory;
+	public String getCategory() {
+		return category;
 	}
 
-	public Shoes setCatagory(String catagory) {
-		this.catagory = catagory;
+	public Shoes setCategory(String category) {
+		this.category = category;
 		return this;
 	}
 
@@ -69,6 +73,11 @@ public class Shoes {
 
 	public Shoes setBrand(Brand brand) {
 		this.brand = brand;
+		return this;
+	}
+	
+	public Shoes setBrandById(int id) {
+		this.brand = new Brand(id);
 		return this;
 	}
 }

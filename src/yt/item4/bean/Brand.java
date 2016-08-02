@@ -1,4 +1,4 @@
-package yt.item4;
+package yt.item4.bean;
 
 import java.util.Set;
 

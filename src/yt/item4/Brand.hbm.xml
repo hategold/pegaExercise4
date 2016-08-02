@@ -3,7 +3,7 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <!-- Generated 2016/8/1 ?U?? 03:14:12 by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
-	<class name="yt.item4.Brand" table="Brands">
+	<class name="yt.item4.bean.Brand" table="Brands">
 		<id name="brandId" type="java.lang.Integer">
 			<column name="BRANDID" />
 			<generator class="native" />
@@ -21,7 +21,7 @@
 			<key>
 				<column name="BrandId" />
 			</key>
-			<one-to-many class="yt.item4.Shoes"/>
+			<one-to-many class="yt.item4.bean.Shoes"/>
 		</set>
 	</class>
 </hibernate-mapping>

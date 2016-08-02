@@ -10,13 +10,16 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
 
+import yt.item4.bean.Brand;
+import yt.item4.bean.Shoes;
+
 public class TestHibernate {
 
 	public static void main(String[] args) {
 		Configuration config = new Configuration().configure();
 		SessionFactory sessionFactory = config.buildSessionFactory();
 		Shoes shoes = new Shoes();
-		shoes.setShoesName("king").setPrice(5566).setCatagory("sport").setSeries("AIR");
+		shoes.setShoesName("king").setPrice(5566).setCategory("sport").setSeries("AIR");
 		
 		
 		
