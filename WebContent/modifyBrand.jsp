@@ -25,7 +25,7 @@
 		<div class="row">
 			<div class="col-md-offset-2 col-md-8 jumbotron">
 				<h2>Insert/Edit the shoes brands record</h2>
-				<form action="ShoesDBController.do" method="post">
+				<form action="BrandTableController.do" method="post">
 					<fieldset>
 						<div class="form-group">
 							<label>BrandId</label><input type="text" name="brandId"
@@ -42,7 +42,8 @@
 						<div class="form-group">
 							<label>Country</label><select class="form-control" name="country">
 								<c:forEach items="${countryCodeMap}" var="countryCode">
-									<option value=${countryCode.key}>${countryCode.value}</option>
+									<option value=${countryCode.key
+										} ${countryCode.key == brand.getCountry()?"selected":""}>${countryCode.value}</option>
 								</c:forEach>
 							</select>
 						</div>

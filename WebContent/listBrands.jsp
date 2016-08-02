@@ -45,11 +45,11 @@
 								<td><c:out value="${brand.getWebsite()}" /></td>
 								<td><c:out value="${brand.getCountry()}" /></td>
 								<td><a
-									href="ShoesDBController.do?action=edit&brandId=<c:out value="${brand.getBrandId() }"/>"><button
+									href="BrandTableController.do?action=edit&brandId=<c:out value="${brand.getBrandId() }"/>"><button
 											type="button" class="btn btn-primary">Update</button></a></td>
 
 								<td><a
-									href="ShoesDBController.do?action=delete&brandId=<c:out value="${brand.getBrandId() }"/>"><button
+									href="BrandTableController.do?action=delete&brandId=<c:out value="${brand.getBrandId() }"/>"><button
 											type="button" class="btn btn-primary">Delete</button></a></td>
 
 							</tr>
@@ -60,7 +60,7 @@
 		</div>
 		<div class="row">
 			<p class="col-md-offset-2">
-				<a href="ShoesDBController.do?action=insert"><button
+				<a href="BrandTableController.do?action=insert"><button
 						type="button" class="btn btn-success">Add Shoes Brands</button></a>
 			</p>
 		</div>

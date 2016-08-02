@@ -11,7 +11,7 @@
 </head>
 <body>
 
-	<jsp:forward page="/ShoesDBController?action=list"></jsp:forward>
+	<jsp:forward page="/BrandTableController?action=list"></jsp:forward>
 
 </body>
 </html>
