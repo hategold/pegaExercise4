@@ -6,6 +6,7 @@ import java.util.List;
 import yt.item4.bean.Shoes;
 
 public interface ShoesDao {
+
 	public Shoes selectById(int shoesId) throws SQLException;
 
 	public boolean delete(int shoesId) throws SQLException;

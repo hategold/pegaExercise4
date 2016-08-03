@@ -84,12 +84,10 @@ public class ShoesTableController extends HttpServlet {
 	}
 
 	private boolean isCreate(String id) {
-		try {
-			Integer.valueOf(id);
-		} catch (NumberFormatException e) {
-			return true;
-		}
-		return false;
+		if (checkDoString2Int(id) == 0)
+			return false;
+
+		return true;
 	}
 
 	private int checkDoString2Int(String s) {

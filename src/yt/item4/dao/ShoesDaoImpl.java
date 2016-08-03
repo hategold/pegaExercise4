@@ -57,7 +57,7 @@ public class ShoesDaoImpl implements ShoesDao {
 	public boolean insert(Shoes shoes) throws SQLException {
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
-		shoes.setBrand((Brand)session.get(Brand.class, shoes.getBrand().getBrandId()));
+		shoes.setBrand((Brand) session.get(Brand.class, shoes.getBrand().getBrandId()));
 		session.save(shoes);
 		tx.commit();
 		session.close();

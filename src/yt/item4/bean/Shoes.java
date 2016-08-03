@@ -13,11 +13,11 @@ public class Shoes {
 	private int price;
 
 	private Brand brand;
-	
-	public Shoes(){
-		
+
+	public Shoes() {
+
 	}
-	
+
 	public Shoes(String shoesName) {
 		setShoesName(shoesName);
 	}
@@ -75,7 +75,7 @@ public class Shoes {
 		this.brand = brand;
 		return this;
 	}
-	
+
 	public Shoes setBrandById(int id) {
 		this.brand = new Brand(id);
 		return this;

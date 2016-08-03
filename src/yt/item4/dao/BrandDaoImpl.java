@@ -1,6 +1,5 @@
 package yt.item4.dao;
 
-
 import java.sql.SQLException;
 import java.util.List;
 
@@ -11,7 +10,6 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
 
 import yt.item4.bean.Brand;
-
 
 public class BrandDaoImpl implements BrandDao {
 
@@ -34,7 +32,7 @@ public class BrandDaoImpl implements BrandDao {
 		return selectedBrand;
 	}
 
-	@Override 
+	@Override
 	public List<Brand> readFullBrands() {
 
 		Session session = sessionFactory.openSession();
@@ -60,7 +58,7 @@ public class BrandDaoImpl implements BrandDao {
 
 	}
 
-	@Override 
+	@Override
 	public boolean updateBrand(Brand brand) throws SQLException {
 
 		Session session = sessionFactory.openSession();

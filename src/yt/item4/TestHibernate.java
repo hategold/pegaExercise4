@@ -20,25 +20,23 @@ public class TestHibernate {
 		SessionFactory sessionFactory = config.buildSessionFactory();
 		Shoes shoes = new Shoes();
 		shoes.setShoesName("king").setPrice(5566).setCategory("sport").setSeries("AIR");
-		
-		
-		
+
 		Brand brand = new Brand("ininder3eeeee333");
 		brand.setCountry("TWN").setWebsite("www.5566").setBrandId(55);
 		shoes.setBrand(brand);
 		brand.setShoesGroup(new HashSet<Shoes>());
 		brand.addShoes(shoes);
-		
+
 		Session session = sessionFactory.openSession();
 
 		@SuppressWarnings("unchecked")
 		Query<Brand> query = session.createQuery("From Brand");
 		List<Brand> l = query.getResultList();
-		for(Brand b :l){
+		for (Brand b : l) {
 			System.out.println(b);
 		}
 		session.close();
-		
+
 //		session = sessionFactory.openSession();
 //		Transaction tx = session.beginTransaction();
 //		brand = (Brand)session.get(Brand.class, 56);
