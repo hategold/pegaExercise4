@@ -70,8 +70,10 @@ public class HibernateShoesDaoImpl implements ShoesDao {
 	@Override
 	public List<Shoes> readFullByBrand(int brandId) {
 		Session session = sessionFactory.openSession();
-		if (null == session.get(Brand.class, brandId))
+
+		if (!isExistBrand(session.get(Brand.class, brandId)))
 			return null;
+
 		@SuppressWarnings("unchecked")
 		Query<Shoes> query = session.createQuery("from Shoes where brandId = ?");
 		query.setParameter(0, brandId);
@@ -79,6 +81,13 @@ public class HibernateShoesDaoImpl implements ShoesDao {
 		session.close();
 
 		return shoesList;
+	}
+
+	private boolean isExistBrand(Brand brand) {
+		if (null == brand)
+			return false;
+
+		return true;
 	}
 
 	public SessionFactory getSessionFactory() {

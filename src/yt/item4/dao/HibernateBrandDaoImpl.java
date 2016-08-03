@@ -36,7 +36,7 @@ public class HibernateBrandDaoImpl implements BrandDao {
 
 		Session session = sessionFactory.openSession();
 
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings("unchecked") //TODO check why?
 		Query<Brand> query = session.createQuery("From Brand");
 		List<Brand> brandList = query.getResultList();
 		session.close();

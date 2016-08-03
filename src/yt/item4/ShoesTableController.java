@@ -44,7 +44,7 @@ public class ShoesTableController extends HttpServlet {
 		String action = request.getParameter("action");
 		String forward = excuteAction(action, request);
 		if (null == forward) {
-			response.sendRedirect("/webExercise4/index.jsp");
+			response.sendRedirect("/webExercise4/index.jsp"); // set to main page
 			return;
 		}
 		RequestDispatcher view = request.getRequestDispatcher(forward);
@@ -70,7 +70,7 @@ public class ShoesTableController extends HttpServlet {
 		Brand brand;
 		try {
 			brand = brandDao.selectBrandById(Integer.valueOf(request.getParameter("brandId")));
-			if (null == brand)
+			if (null == brand)// no this brand
 				return null;
 		} catch (NumberFormatException | SQLException e1) {
 			e1.printStackTrace();
@@ -85,7 +85,7 @@ public class ShoesTableController extends HttpServlet {
 			}
 			if (ActionEnum.EDIT.name().equalsIgnoreCase(action)) {
 				Shoes shoes = shoesDao.selectById(Integer.valueOf(request.getParameter("shoesId")));
-				if (shoes == null || shoes.getBrand().getBrandId() != brand.getBrandId()) //got no data
+				if (null == shoes || !isShoesMapToBrand(shoes, brand)) //got no data or value mapping failed
 					return dispatchToList(request, brand);
 
 				return dispatchToUpdate(request, shoes);
@@ -101,6 +101,13 @@ public class ShoesTableController extends HttpServlet {
 		}
 		return dispatchToList(request, brand);
 
+	}
+
+	private boolean isShoesMapToBrand(Shoes shoes, Brand brand) {
+		if (shoes.getBrand().getBrandId() == brand.getBrandId())
+			return true;
+
+		return false;
 	}
 
 	private boolean isCreate(String id) {
