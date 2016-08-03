@@ -16,13 +16,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import yt.item4.bean.Brand;
 import yt.item4.dao.BrandDao;
-import yt.item4.dao.BrandDaoImpl;
+import yt.item4.factory.HibernateDaoFactory;
+import yt.item4.factory.IDaoFactory;
 
 /**
  * Servlet implementation class BrandTableController
  */
 @WebServlet("/BrandTableController")
 public class BrandTableController extends HttpServlet {
+
+	private IDaoFactory daoFactory;
 
 	private BrandDao brandDao;
 
@@ -35,7 +38,8 @@ public class BrandTableController extends HttpServlet {
 	public static final String COUNTRY_CODE_FILE = "/countryCodeToFullName";
 
 	public BrandTableController() {
-		brandDao = new BrandDaoImpl();
+		this.daoFactory = new HibernateDaoFactory();
+		this.brandDao = daoFactory.createBrandDao();
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -113,6 +117,10 @@ public class BrandTableController extends HttpServlet {
 		return false;
 	}
 
+	public void redirectList(HttpServletResponse response) throws IOException {
+		response.sendRedirect("/webExercise4/BrandTableController?action=list");
+	}
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		Brand brand = new Brand(request.getParameter("brandName"));
@@ -121,14 +129,14 @@ public class BrandTableController extends HttpServlet {
 			if (isCreate(request.getParameter("brandId"))) {
 				brand.setCountry(request.getParameter("country")).setWebsite(request.getParameter("website"));
 				brandDao.insertBrand(brand);
-				response.sendRedirect("/webExercise4/BrandTableController?action=list"); //end post
+				redirectList(response); //end post
 				return;
 			}
 
 			brand.setBrandId(Integer.valueOf(request.getParameter("brandId"))).setCountry(request.getParameter("country"))
 					.setWebsite(request.getParameter("website"));
 			brandDao.updateBrand(brand);
-			response.sendRedirect("/webExercise4/BrandTableController?action=list");
+			redirectList(response);
 
 		} catch (SQLException e) {
 			e.printStackTrace();

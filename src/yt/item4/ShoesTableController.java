@@ -2,6 +2,7 @@ package yt.item4;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -10,11 +11,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import yt.item4.bean.Brand;
 import yt.item4.bean.Shoes;
 import yt.item4.dao.BrandDao;
-import yt.item4.dao.BrandDaoImpl;
 import yt.item4.dao.ShoesDao;
-import yt.item4.dao.ShoesDaoImpl;
+import yt.item4.factory.HibernateDaoFactory;
+import yt.item4.factory.IDaoFactory;
 
 /**
  * Servlet implementation class ShoesTableController
@@ -24,6 +26,8 @@ public class ShoesTableController extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
+	private IDaoFactory daoFactory;
+
 	private ShoesDao shoesDao;
 
 	public static final String LIST_SHOESS = "/listShoes.jsp";
@@ -31,63 +35,79 @@ public class ShoesTableController extends HttpServlet {
 	public static final String INSERT_OR_EDIT = "/modifyShoes.jsp";
 
 	public ShoesTableController() {
-		this.shoesDao = new ShoesDaoImpl();
+		this.daoFactory = new HibernateDaoFactory();
+		this.shoesDao = daoFactory.createShoesDao();
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		String action = request.getParameter("action");
-		RequestDispatcher view = request.getRequestDispatcher(excuteAction(action, request));
+		String forward = excuteAction(action, request);
+		if (null == forward) {
+			response.sendRedirect("/webExercise4/index.jsp");
+			return;
+		}
+		RequestDispatcher view = request.getRequestDispatcher(forward);
 		view.forward(request, response);
 	}
 
-	private String dispatchToList(HttpServletRequest request) {
-		BrandDao brandDao = new BrandDaoImpl();
+	private String dispatchToList(HttpServletRequest request, Brand brand) {
 
-		request.setAttribute("brand", brandDao.selectBrandById(Integer.valueOf(request.getParameter("brandId"))));
-		request.setAttribute("shoesList", shoesDao.readFullByBrand(Integer.valueOf(request.getParameter("brandId"))));
+		request.setAttribute("brand", brand);
+		List<Shoes> shoesList = shoesDao.readFullByBrand(brand.getBrandId());
+		request.setAttribute("shoesList", shoesList);
 		return LIST_SHOESS;
 	}
 
-	private String dispatchToUpdate(HttpServletRequest request) {
-		BrandDao brandDao = new BrandDaoImpl();
-
-		request.setAttribute("brand", brandDao.selectBrandById(Integer.valueOf(request.getParameter("brandId"))));
+	private String dispatchToUpdate(HttpServletRequest request, Shoes shoes) {
+		request.setAttribute("shoes", shoes);
+		request.setAttribute("brand", shoes.getBrand());
 		return INSERT_OR_EDIT;
 	}
 
 	private String excuteAction(String action, HttpServletRequest request) {
+		BrandDao brandDao = daoFactory.createBrandDao();
+		Brand brand;
+		try {
+			brand = brandDao.selectBrandById(Integer.valueOf(request.getParameter("brandId")));
+			if (null == brand)
+				return null;
+		} catch (NumberFormatException | SQLException e1) {
+			e1.printStackTrace();
+			return null;
+		}
 
 		try {
 			if (ActionEnum.DELETE.name().equalsIgnoreCase(action)) {
 
 				shoesDao.delete(Integer.valueOf(request.getParameter("shoesId")));
-				return dispatchToList(request);
+				return dispatchToList(request, brand);
 			}
 			if (ActionEnum.EDIT.name().equalsIgnoreCase(action)) {
 				Shoes shoes = shoesDao.selectById(Integer.valueOf(request.getParameter("shoesId")));
-				if (shoes == null) //got no data
-					return dispatchToList(request);
-				request.setAttribute("shoes", shoes);
-				return dispatchToUpdate(request);
+				if (shoes == null || shoes.getBrand().getBrandId() != brand.getBrandId()) //got no data
+					return dispatchToList(request, brand);
+
+				return dispatchToUpdate(request, shoes);
 			}
 
 			if (ActionEnum.INSERT.name().equalsIgnoreCase(action)) {
-				return dispatchToUpdate(request);
+				Shoes shoes = new Shoes().setBrand(brand);
+				return dispatchToUpdate(request, shoes);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (NullPointerException e) {
 		}
-		return dispatchToList(request);
+		return dispatchToList(request, brand);
 
 	}
 
 	private boolean isCreate(String id) {
 		if (checkDoString2Int(id) == 0)
-			return false;
+			return true;
 
-		return true;
+		return false;
 	}
 
 	private int checkDoString2Int(String s) {
