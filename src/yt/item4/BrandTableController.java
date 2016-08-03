@@ -18,6 +18,7 @@ import yt.item4.bean.Brand;
 import yt.item4.dao.BrandDao;
 import yt.item4.factory.HibernateDaoFactory;
 import yt.item4.factory.IDaoFactory;
+import yt.item4.factory.CountryMapFactory;
 
 /**
  * Servlet implementation class BrandTableController
@@ -28,6 +29,8 @@ public class BrandTableController extends HttpServlet {
 	private IDaoFactory daoFactory;
 
 	private BrandDao brandDao;
+
+	private Map<CountryCode, String> countryMap;
 
 	private static final long serialVersionUID = 1L;
 
@@ -40,6 +43,7 @@ public class BrandTableController extends HttpServlet {
 	public BrandTableController() {
 		this.daoFactory = new HibernateDaoFactory();
 		this.brandDao = daoFactory.createBrandDao();
+		this.countryMap = (new CountryMapFactory()).createCountryMap(COUNTRY_CODE_FILE);
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -55,7 +59,7 @@ public class BrandTableController extends HttpServlet {
 	}
 
 	private String dispatchToUpdate(HttpServletRequest request) {
-		request.setAttribute("countryCodeMap", buildCountryMap());
+		request.setAttribute("countryCodeMap", countryMap);
 		return INSERT_OR_EDIT;
 	}
 
@@ -84,28 +88,6 @@ public class BrandTableController extends HttpServlet {
 		}
 		return dispatchToList(request);
 
-	}
-
-	private Map<CountryCode, String> buildCountryMap() {//TODO check
-		Map<CountryCode, String> countryCodeMap = new EnumMap<CountryCode, String>(CountryCode.class);
-		BufferedReader countryCodeReader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream(COUNTRY_CODE_FILE)));
-
-		try {
-			String line = "";
-			while ((line = countryCodeReader.readLine()) != null) { // can use double loop to avoid double try?
-				int cammaIndex = line.indexOf(",");
-				String countryCodeString = line.substring(0, cammaIndex).trim();
-				String countryName = line.substring(cammaIndex + 1).replace("\"", "").trim();
-				try {
-					countryCodeMap.put(CountryCode.valueOf(countryCodeString), countryName);
-				} catch (IllegalArgumentException e) {
-					continue;
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return countryCodeMap;
 	}
 
 	private boolean isCreate(String id) {

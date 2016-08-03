@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2016/8/1 ?U?? 03:14:12 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+	<class name="yt.item4.bean.Shoes" table="SHOES">
+		<id name="shoesId" type="java.lang.Integer">
+			<column name="SHOESID" />
+			<generator class="native" />
+		</id>
+		<property name="shoesName" type="java.lang.String">
+			<column name="SHOESNAME" />
+		</property>
+		<property name="series" type="java.lang.String">
+			<column name="SERIES" />
+		</property>
+		<property name="category" type="java.lang.String">
+			<column name="CATEGORY" />
+		</property>
+		<property name="price" type="java.lang.Integer">
+			<column name="PRICE" />
+		</property>
+		<many-to-one name="brand" column = "brandId" class="yt.item4.bean.Brand" cascade="save-update" outer-join ="true"/>
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2016/8/1 ?U?? 03:14:12 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+	<class name="yt.item4.bean.Brand" table="Brands">
+		<id name="brandId" type="java.lang.Integer">
+			<column name="BRANDID" />
+			<generator class="native" />
+		</id>
+		<property name="brandName" type="java.lang.String">
+			<column name="BRANDNAME" />
+		</property>
+		<property name="website" type="java.lang.String">
+			<column name="WEBSITE" />
+		</property>
+		<property name="country" type="java.lang.String">
+			<column name="COUNTRY" />
+		</property>
+		<set name="shoesGroup" table="shoes" inverse="true" cascade="save-update, delete">
+			<key>
+				<column name="BrandId" />
+			</key>
+			<one-to-many class="yt.item4.bean.Shoes"/>
+		</set>
+	</class>
+</hibernate-mapping>
