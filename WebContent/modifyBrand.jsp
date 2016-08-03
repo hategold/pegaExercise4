@@ -33,8 +33,8 @@
 								value="${brand.getBrandId()}" class="form-control" readonly>
 						</div>
 						<div class="form-group">
-							<label>BandName</label><input type="text" name="brandName"
-								value="${brand.getBrandName()}" class="form-control">
+							<label>BrandName</label><input type="text" name="brandName"
+								value="${brand.getBrandName()}" class="form-control" required>
 						</div>
 						<div class="form-group">
 							<label>Website</label><input type="text" name="website"

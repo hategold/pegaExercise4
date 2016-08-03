@@ -51,7 +51,7 @@ public class ShoesTableController extends HttpServlet {
 
 	private String dispatchToUpdate(HttpServletRequest request) {
 		BrandDao brandDao = new BrandDaoImpl();
-		
+
 		request.setAttribute("brand", brandDao.selectBrandById(Integer.valueOf(request.getParameter("brandId"))));
 		return INSERT_OR_EDIT;
 	}
@@ -92,17 +92,24 @@ public class ShoesTableController extends HttpServlet {
 		return false;
 	}
 
+	private int checkDoString2Int(String s) {
+		if (s != null && s.trim().length() > 0) {
+			return Integer.valueOf(s);
+		}
+		return 0;
+	}
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		Shoes shoes = new Shoes(request.getParameter("shoesName"));
 
 		try {
 			if (isCreate(request.getParameter("shoesId"))) {
-				shoes.setCategory(request.getParameter("category")).setPrice(Integer.valueOf(request.getParameter("price")))
+				shoes.setCategory(request.getParameter("category")).setPrice(checkDoString2Int(request.getParameter("price")))
 						.setSeries(request.getParameter("series"));
 				shoes.setBrandById(Integer.valueOf(request.getParameter("brandId")));
 				shoesDao.insert(shoes);
-				response.sendRedirect("/webExercise4/ShoesTableController?action=list&brandId="+request.getParameter("brandId")); //end post
+				response.sendRedirect("/webExercise4/ShoesTableController?action=list&brandId=" + request.getParameter("brandId")); //end post
 				return;
 			}
 
@@ -110,7 +117,7 @@ public class ShoesTableController extends HttpServlet {
 					.setPrice(Integer.valueOf(request.getParameter("price"))).setSeries(request.getParameter("series"));
 			shoes.setBrandById(Integer.valueOf(request.getParameter("brandId")));
 			shoesDao.update(shoes);
-			response.sendRedirect("/webExercise4/ShoesTableController?action=list&brandId="+request.getParameter("brandId"));
+			response.sendRedirect("/webExercise4/ShoesTableController?action=list&brandId=" + request.getParameter("brandId"));
 
 		} catch (SQLException e) {
 			e.printStackTrace();

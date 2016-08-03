@@ -33,7 +33,7 @@
 						</div>
 						<div class="form-group">
 							<label>ShoesName</label><input type="text" name="shoesName"
-								value="${shoes.getShoesName()}" class="form-control">
+								value="${shoes.getShoesName()}" class="form-control" required>
 						</div>
 						<div class="form-group">
 							<label>Series</label><input type="text" name="series"
