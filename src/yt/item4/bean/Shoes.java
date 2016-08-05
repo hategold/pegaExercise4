@@ -1,6 +1,10 @@
 package yt.item4.bean;
 
-public class Shoes {
+import java.io.Serializable;
+
+public class Shoes implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 
 	private int shoesId;
 

@@ -1,10 +1,8 @@
 package yt.item4;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Map;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -45,9 +43,7 @@ public class BrandTableController extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		String action = request.getParameter("action");
-		RequestDispatcher view = request.getRequestDispatcher(excuteAction(action, request));
-		view.forward(request, response);
+		request.getRequestDispatcher(excuteAction(request.getParameter("action"), request)).forward(request, response);
 	}
 
 	private String dispatchToList(HttpServletRequest request) {
@@ -75,16 +71,13 @@ public class BrandTableController extends HttpServlet {
 				request.setAttribute("brand", brand);
 				return dispatchToUpdate(request);
 			}
-
 			if (ActionEnum.INSERT.name().equalsIgnoreCase(action)) {
 				return dispatchToUpdate(request);
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
 		} catch (NullPointerException e) {
+			e.printStackTrace();
 		}
 		return dispatchToList(request);
-
 	}
 
 	private boolean isCreate(String id) {
@@ -104,22 +97,17 @@ public class BrandTableController extends HttpServlet {
 
 		Brand brand = new Brand(request.getParameter("brandName"));
 
-		try {
-			if (isCreate(request.getParameter("brandId"))) {
-				brand.setCountry(request.getParameter("country")).setWebsite(request.getParameter("website"));
-				brandDao.insertBrand(brand);
-				redirectList(response); //end post
-				return;
-			}
-
-			brand.setBrandId(Integer.valueOf(request.getParameter("brandId"))).setCountry(request.getParameter("country"))
-					.setWebsite(request.getParameter("website"));
-			brandDao.updateBrand(brand);
-			redirectList(response);
-
-		} catch (SQLException e) {
-			e.printStackTrace();
+		if (isCreate(request.getParameter("brandId"))) {
+			brand.setCountry(request.getParameter("country")).setWebsite(request.getParameter("website"));
+			brandDao.insertBrand(brand);
+			redirectList(response); //end post
+			return;
 		}
+
+		brand.setBrandId(Integer.valueOf(request.getParameter("brandId"))).setCountry(request.getParameter("country"))
+				.setWebsite(request.getParameter("website"));
+		brandDao.updateBrand(brand);
+		redirectList(response);
 
 	}
 

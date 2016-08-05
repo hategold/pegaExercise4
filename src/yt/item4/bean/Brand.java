@@ -1,8 +1,11 @@
 package yt.item4.bean;
 
+import java.io.Serializable;
 import java.util.Set;
 
-public class Brand {
+public class Brand implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private int brandId;
 

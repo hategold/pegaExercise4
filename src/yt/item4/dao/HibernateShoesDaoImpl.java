@@ -34,22 +34,25 @@ public class HibernateShoesDaoImpl implements ShoesDao {
 		Transaction tx = session.beginTransaction();
 		try {
 			session.delete(selectById(shoesId));
-			tx.commit();
-			session.close();
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 			System.out.println("delete Null entity");
 		}
+		tx.commit();
+		session.close();
+
 		return true;
 	}
 
 	@Override
 	public boolean update(Shoes shoes) {
 		Session session = sessionFactory.openSession();
-		Transaction tx = session.beginTransaction();
 		Shoes updateShoes = selectById(shoes.getShoesId());
-		updateShoes.setCategory(shoes.getCategory()).setPrice(shoes.getPrice()).setSeries(shoes.getSeries()).setShoesName(shoes.getShoesName());
-		updateShoes.setBrand((Brand) session.get(Brand.class, shoes.getBrand().getBrandId()));
+
+		updateShoes.setCategory(shoes.getCategory()).setPrice(shoes.getPrice()).setSeries(shoes.getSeries()).setShoesName(shoes.getShoesName())
+				.setBrand((Brand) session.get(Brand.class, shoes.getBrand().getBrandId()));
+
+		Transaction tx = session.beginTransaction();
 		session.update(updateShoes);
 		tx.commit();
 		session.close();
@@ -59,8 +62,8 @@ public class HibernateShoesDaoImpl implements ShoesDao {
 	@Override
 	public boolean insert(Shoes shoes) {
 		Session session = sessionFactory.openSession();
-		Transaction tx = session.beginTransaction();
 		shoes.setBrand((Brand) session.get(Brand.class, shoes.getBrand().getBrandId()));
+		Transaction tx = session.beginTransaction();
 		session.save(shoes);
 		tx.commit();
 		session.close();
@@ -84,10 +87,7 @@ public class HibernateShoesDaoImpl implements ShoesDao {
 	}
 
 	private boolean isExistBrand(Brand brand) {
-		if (null == brand)
-			return false;
-
-		return true;
+		return !(null == brand);
 	}
 
 	public SessionFactory getSessionFactory() {

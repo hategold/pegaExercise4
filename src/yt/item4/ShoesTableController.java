@@ -1,10 +1,7 @@
 package yt.item4;
 
 import java.io.IOException;
-import java.sql.SQLException;
-import java.util.List;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -41,21 +38,18 @@ public class ShoesTableController extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		String action = request.getParameter("action");
-		String forward = excuteAction(action, request);
+		String forward = excuteAction(request.getParameter("action"), request);
 		if (null == forward) {
 			response.sendRedirect("/webExercise4/index.jsp"); // set to main page
 			return;
 		}
-		RequestDispatcher view = request.getRequestDispatcher(forward);
-		view.forward(request, response);
+		request.getRequestDispatcher(forward).forward(request, response);
 	}
 
 	private String dispatchToList(HttpServletRequest request, Brand brand) {
 
 		request.setAttribute("brand", brand);
-		List<Shoes> shoesList = shoesDao.readFullByBrand(brand.getBrandId());
-		request.setAttribute("shoesList", shoesList);
+		request.setAttribute("shoesList", shoesDao.readFullByBrand(brand.getBrandId()));
 		return LIST_SHOESS;
 	}
 
@@ -72,49 +66,40 @@ public class ShoesTableController extends HttpServlet {
 			brand = brandDao.selectBrandById(Integer.valueOf(request.getParameter("brandId")));
 			if (null == brand)// no this brand
 				return null;
-		} catch (NumberFormatException | SQLException e1) {
-			e1.printStackTrace();
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
 			return null;
 		}
 
 		try {
-			if (ActionEnum.DELETE.name().equalsIgnoreCase(action)) {
-
-				shoesDao.delete(Integer.valueOf(request.getParameter("shoesId")));
-				return dispatchToList(request, brand);
-			}
-			if (ActionEnum.EDIT.name().equalsIgnoreCase(action)) {
-				Shoes shoes = shoesDao.selectById(Integer.valueOf(request.getParameter("shoesId")));
-				if (null == shoes || !isShoesMapToBrand(shoes, brand)) //got no data or value mapping failed
+			switch (ActionEnum.valueOf(action.toUpperCase())) {
+				case DELETE:
+					shoesDao.delete(Integer.valueOf(request.getParameter("shoesId")));
 					return dispatchToList(request, brand);
+				case EDIT:
+					Shoes UpdateShoes = shoesDao.selectById(Integer.valueOf(request.getParameter("shoesId")));
+					if (null == UpdateShoes || !isShoesMapToBrand(UpdateShoes, brand)) //got no data or value mapping failed
+						return dispatchToList(request, brand);
 
-				return dispatchToUpdate(request, shoes);
+					return dispatchToUpdate(request, UpdateShoes);
+				case INSERT:
+					Shoes InsertShoes = new Shoes().setBrand(brand);
+					return dispatchToUpdate(request, InsertShoes);
+				default:
+					break;
 			}
-
-			if (ActionEnum.INSERT.name().equalsIgnoreCase(action)) {
-				Shoes shoes = new Shoes().setBrand(brand);
-				return dispatchToUpdate(request, shoes);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
 		} catch (NullPointerException e) {
+			e.printStackTrace();
 		}
 		return dispatchToList(request, brand);
-
 	}
 
 	private boolean isShoesMapToBrand(Shoes shoes, Brand brand) {
-		if (shoes.getBrand().getBrandId() == brand.getBrandId())
-			return true;
-
-		return false;
+		return shoes.getBrand().getBrandId() == brand.getBrandId();
 	}
 
 	private boolean isCreate(String id) {
-		if (checkDoString2Int(id) == 0)
-			return true;
-
-		return false;
+		return checkDoString2Int(id) == 0;
 	}
 
 	private int checkDoString2Int(String s) {
@@ -128,25 +113,19 @@ public class ShoesTableController extends HttpServlet {
 
 		Shoes shoes = new Shoes(request.getParameter("shoesName"));
 
-		try {
-			if (isCreate(request.getParameter("shoesId"))) {
-				shoes.setCategory(request.getParameter("category")).setPrice(checkDoString2Int(request.getParameter("price")))
-						.setSeries(request.getParameter("series"));
-				shoes.setBrandById(Integer.valueOf(request.getParameter("brandId")));
-				shoesDao.insert(shoes);
-				response.sendRedirect("/webExercise4/ShoesTableController?action=list&brandId=" + request.getParameter("brandId")); //end post
-				return;
-			}
-
-			shoes.setShoesId(Integer.valueOf(request.getParameter("shoesId"))).setCategory(request.getParameter("category"))
-					.setPrice(Integer.valueOf(request.getParameter("price"))).setSeries(request.getParameter("series"));
-			shoes.setBrandById(Integer.valueOf(request.getParameter("brandId")));
-			shoesDao.update(shoes);
-			response.sendRedirect("/webExercise4/ShoesTableController?action=list&brandId=" + request.getParameter("brandId"));
-
-		} catch (SQLException e) {
-			e.printStackTrace();
+		if (isCreate(request.getParameter("shoesId"))) {
+			shoes.setCategory(request.getParameter("category")).setPrice(checkDoString2Int(request.getParameter("price")))
+					.setSeries(request.getParameter("series")).setBrandById(Integer.valueOf(request.getParameter("brandId")));
+			shoesDao.insert(shoes);
+			response.sendRedirect("/webExercise4/ShoesTableController?action=list&brandId=" + request.getParameter("brandId")); //end post
+			return;
 		}
+
+		shoes.setShoesId(Integer.valueOf(request.getParameter("shoesId"))).setCategory(request.getParameter("category"))
+				.setPrice(Integer.valueOf(request.getParameter("price"))).setSeries(request.getParameter("series"))
+				.setBrandById(Integer.valueOf(request.getParameter("brandId")));
+		shoesDao.update(shoes);
+		response.sendRedirect("/webExercise4/ShoesTableController?action=list&brandId=" + request.getParameter("brandId"));
 
 	}
 }

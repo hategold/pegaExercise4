@@ -19,20 +19,26 @@ public class JdbcBrandDaoImpl implements BrandDao {
 	}
 
 	@Override
-	public Brand selectBrandById(int brandId) throws SQLException {
+	public Brand selectBrandById(int brandId) {
 		String query = "SELECT * FROM brands WHERE BrandId= ?";
 		Brand brand = new Brand(brandId);
 
-		PreparedStatement preparedStatement = conn.prepareStatement(query);
-		preparedStatement.setInt(1, brand.getBrandId());
+		PreparedStatement preparedStatement;
+		try {
+			preparedStatement = conn.prepareStatement(query);
 
-		ResultSet resultSet = preparedStatement.executeQuery();
+			preparedStatement.setInt(1, brand.getBrandId());
 
-		if (resultSet.next()) {	//set is not empty 
-			brand.setBrandName(resultSet.getString("brandName")).setCountry(resultSet.getString("country")).setWebsite(resultSet.getString("website"));
-			resultSet.close();
-			preparedStatement.close();
-			return brand;
+			ResultSet resultSet = preparedStatement.executeQuery();
+
+			if (resultSet.next()) {	//set is not empty 
+				brand.setBrandName(resultSet.getString("brandName")).setCountry(resultSet.getString("country")).setWebsite(resultSet.getString("website"));
+				resultSet.close();
+				preparedStatement.close();
+				return brand;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 		return null;
 	}
@@ -61,24 +67,39 @@ public class JdbcBrandDaoImpl implements BrandDao {
 	}
 
 	@Override
-	public boolean deleteBrand(int brandId) throws SQLException {
+	public boolean deleteBrand(int brandId) {
 
 		String[] elements = { String.valueOf(brandId) };
-		return executeStatement("DELETE FROM brands WHERE BrandId=?", elements);
+		try {
+			return executeStatement("DELETE FROM brands WHERE BrandId=?", elements);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
 
 	}
 
 	@Override
-	public boolean updateBrand(Brand brand) throws SQLException {
+	public boolean updateBrand(Brand brand) {
 
 		String[] elements = { brand.getBrandName(), brand.getWebsite(), brand.getCountry(), String.valueOf(brand.getBrandId()) };
-		return executeStatement("UPDATE brands SET BrandName=?, Website=?, Country=? WHERE BrandId=?", elements);
+		try {
+			return executeStatement("UPDATE brands SET BrandName=?, Website=?, Country=? WHERE BrandId=?", elements);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	@Override
-	public boolean insertBrand(Brand brand) throws SQLException {
+	public boolean insertBrand(Brand brand) {
 		String[] elements = { brand.getBrandName(), brand.getWebsite(), brand.getCountry() };
-		return executeStatement("INSERT brands (BrandName, Website, Country) VALUES (?,?,?)", elements);
+		try {
+			return executeStatement("INSERT brands (BrandName, Website, Country) VALUES (?,?,?)", elements);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
 
 	}
 
@@ -94,10 +115,7 @@ public class JdbcBrandDaoImpl implements BrandDao {
 	}
 
 	private boolean isUpdateSucceed(int updateStatus) {
-		if (updateStatus == 0) {
-			return false;
-		}
-		return true;
+		return !(updateStatus == 0);
 	}
 
 }

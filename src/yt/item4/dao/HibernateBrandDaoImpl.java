@@ -35,8 +35,7 @@ public class HibernateBrandDaoImpl implements BrandDao {
 	public List<Brand> readFullBrands() {
 
 		Session session = sessionFactory.openSession();
-
-		@SuppressWarnings("unchecked") //TODO check why?
+		@SuppressWarnings("unchecked")
 		Query<Brand> query = session.createQuery("From Brand");
 		List<Brand> brandList = query.getResultList();
 		session.close();
@@ -52,12 +51,12 @@ public class HibernateBrandDaoImpl implements BrandDao {
 		Transaction tx = session.beginTransaction();
 		try {
 			session.delete(selectBrandById(brandId));
-			tx.commit();
-			session.close();
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
 			System.out.println("delete Null entity");
 		}
+		tx.commit();
+		session.close();
+
 		return true;
 
 	}
@@ -66,9 +65,10 @@ public class HibernateBrandDaoImpl implements BrandDao {
 	public boolean updateBrand(Brand brand) {
 
 		Session session = sessionFactory.openSession();
-		Transaction tx = session.beginTransaction();
 		Brand updateBrand = selectBrandById(brand.getBrandId());
 		updateBrand.setBrandName(brand.getBrandName()).setCountry(brand.getCountry()).setWebsite(brand.getWebsite()).setShoesGroup(brand.getShoesGroup());
+
+		Transaction tx = session.beginTransaction();
 		session.update(updateBrand);
 		tx.commit();
 		session.close();

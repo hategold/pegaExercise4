@@ -9,6 +9,7 @@
 <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet"
 	type="text/css" />
 <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="jsLib/bootbox.min.js"></script>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Shoes Records</title>
 </head>
@@ -22,8 +23,7 @@
 		</div>
 		<div class="row">
 			<div class="col-md-3 col-md-offset-2">
-				<h3>${brand.getBrandId()}:
-					${brand.getBrandName()}</h3>
+				<h3>${brand.getBrandId()}:${brand.getBrandName()}</h3>
 			</div>
 		</div>
 		<div class="row">
@@ -52,8 +52,9 @@
 											type="button" class="btn btn-primary">Update</button></a></td>
 
 								<td><a
-									href="ShoesTableController.do?action=delete&shoesId=<c:out value="${shoes.getShoesId() }"/>&brandId=<c:out value="${brand.getBrandId() }"/>"><button
-											type="button" class="btn btn-danger">Delete</button></a></td>
+									href="ShoesTableController.do?action=delete&shoesId=<c:out value="${shoes.getShoesId() }"/>&brandId=<c:out value="${brand.getBrandId() }"/>"
+									class="confirm"><button type="button"
+											class="btn btn-danger">Delete</button></a></td>
 
 							</tr>
 						</c:forEach>
@@ -63,7 +64,8 @@
 		</div>
 		<div class="row">
 			<p class="col-md-offset-2 col-md-2">
-				<a href="ShoesTableController.do?action=insert&brandId=<c:out value="${brand.getBrandId() }"/>"><button
+				<a
+					href="ShoesTableController.do?action=insert&brandId=<c:out value="${brand.getBrandId() }"/>"><button
 						type="button" class="btn btn-success">Add Shoes to Brand</button></a>
 			</p>
 			<p class="col-md-2">
@@ -72,5 +74,9 @@
 			</p>
 		</div>
 	</div>
+	<script type="text/javascript" src="jsLib/ConfirmDelete.js"
+		charset="utf-8">
+		
+	</script>
 </body>
 </html>

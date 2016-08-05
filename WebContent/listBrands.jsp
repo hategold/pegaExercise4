@@ -11,6 +11,7 @@
 <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet"
 	type="text/css" />
 <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="jsLib/bootbox.min.js"></script>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Brands Records</title>
 
@@ -23,7 +24,7 @@
 				<div style="height: 4em;"></div>
 			</div>
 		</div>
-		
+
 		<div class="row">
 			<div class="col-md-8 col-md-offset-2">
 				<table class="table table-bordered">
@@ -49,8 +50,9 @@
 											type="button" class="btn btn-primary">Update</button></a></td>
 
 								<td><a
-									href="BrandTableController.do?action=delete&brandId=<c:out value="${brand.getBrandId() }"/>"><button
-											type="button" class="btn btn-danger">Delete</button></a></td>
+									href="BrandTableController.do?action=delete&brandId=<c:out value="${brand.getBrandId() }"/>"
+									class=" confirm"><button type="button"
+											class="btn btn-danger">Delete</button></a></td>
 								<td><a
 									href="ShoesTableController.do?action=list&brandId=<c:out value="${brand.getBrandId() }"/>"><button
 											type="button" class="btn btn-primary">Shoes List</button></a></td>
@@ -68,8 +70,10 @@
 			</p>
 		</div>
 	</div>
-</body>
-
+	<script type="text/javascript" src="jsLib/ConfirmDelete.js"
+		charset="utf-8">
+		
+	</script>
 
 </body>
 </html>
