@@ -35,7 +35,6 @@ public class HibernateShoesDaoImpl implements ShoesDao {
 		try {
 			session.delete(selectById(shoesId));
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
 			System.out.println("delete Null entity");
 		}
 		tx.commit();
@@ -47,13 +46,8 @@ public class HibernateShoesDaoImpl implements ShoesDao {
 	@Override
 	public boolean update(Shoes shoes) {
 		Session session = sessionFactory.openSession();
-		Shoes updateShoes = selectById(shoes.getShoesId());
-
-		updateShoes.setCategory(shoes.getCategory()).setPrice(shoes.getPrice()).setSeries(shoes.getSeries()).setShoesName(shoes.getShoesName())
-				.setBrand((Brand) session.get(Brand.class, shoes.getBrand().getBrandId()));
-
 		Transaction tx = session.beginTransaction();
-		session.update(updateShoes);
+		session.update(shoes);
 		tx.commit();
 		session.close();
 		return true;

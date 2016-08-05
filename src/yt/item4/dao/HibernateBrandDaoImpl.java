@@ -65,11 +65,8 @@ public class HibernateBrandDaoImpl implements BrandDao {
 	public boolean updateBrand(Brand brand) {
 
 		Session session = sessionFactory.openSession();
-		Brand updateBrand = selectBrandById(brand.getBrandId());
-		updateBrand.setBrandName(brand.getBrandName()).setCountry(brand.getCountry()).setWebsite(brand.getWebsite()).setShoesGroup(brand.getShoesGroup());
-
 		Transaction tx = session.beginTransaction();
-		session.update(updateBrand);
+		session.update(brand);
 		tx.commit();
 		session.close();
 		return true;
