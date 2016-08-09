@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 import yt.item4.bean.Brand;
 import yt.item4.bean.Shoes;
 import yt.item4.dao.BrandDao;
+import yt.item4.dao.GenericDao;
+import yt.item4.dao.HibernateGenericDaoImpl;
 import yt.item4.dao.ShoesDao;
 import yt.item4.factory.HibernateDaoFactory;
 import yt.item4.factory.IDaoFactory;
@@ -19,113 +21,75 @@ import yt.item4.factory.IDaoFactory;
  * Servlet implementation class ShoesTableController
  */
 @WebServlet("/ShoesTableController")
-public class ShoesTableController extends HttpServlet {
+public class ShoesTableController extends AbstractTableController<Shoes, Integer> {
 
 	private static final long serialVersionUID = 1L;
-
-	private IDaoFactory daoFactory;
-
-	private ShoesDao shoesDao;
 
 	public static final String LIST_SHOESS = "/listShoes.jsp";
 
 	public static final String INSERT_OR_EDIT = "/modifyShoes.jsp";
 
 	public ShoesTableController() {
-		this.daoFactory = new HibernateDaoFactory();
-		this.shoesDao = daoFactory.createShoesDao();
-	}
-
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-		String forward = excuteAction(request.getParameter("action"), request);
-		if (null == forward) {
-			response.sendRedirect("/webExercise4/index.jsp"); // set to main page
-			return;
-		}
-		request.getRequestDispatcher(forward).forward(request, response);
-	}
-
-	private String dispatchToList(HttpServletRequest request, Brand brand) {
-
-		request.setAttribute("brand", brand);
-		request.setAttribute("shoesList", shoesDao.readFullByBrand(brand.getBrandId()));
-		return LIST_SHOESS;
-	}
-
-	private String dispatchToUpdate(HttpServletRequest request, Shoes shoes) {
-		request.setAttribute("shoes", shoes);
-		request.setAttribute("brand", shoes.getBrand());
-		return INSERT_OR_EDIT;
-	}
-
-	private String excuteAction(String action, HttpServletRequest request) {
-		BrandDao brandDao = daoFactory.createBrandDao();
-		Brand brand;
-		try {
-			brand = brandDao.selectBrandById(Integer.valueOf(request.getParameter("brandId")));
-			if (null == brand)// no this brand
-				return null;
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
-			return null;
-		}
-
-		try {
-			switch (ActionEnum.valueOf(action.toUpperCase())) {
-				case DELETE:
-					shoesDao.delete(Integer.valueOf(request.getParameter("shoesId")));
-					return dispatchToList(request, brand);
-				case EDIT:
-					Shoes UpdateShoes = shoesDao.selectById(Integer.valueOf(request.getParameter("shoesId")));
-					if (null == UpdateShoes || !isShoesMapToBrand(UpdateShoes, brand)) //got no data or value mapping failed
-						return dispatchToList(request, brand);
-
-					return dispatchToUpdate(request, UpdateShoes);
-				case INSERT:
-					Shoes InsertShoes = new Shoes().setBrand(brand);
-					return dispatchToUpdate(request, InsertShoes);
-				default:
-					break;
-			}
-		} catch (NullPointerException e) {
-			e.printStackTrace();
-		}
-		return dispatchToList(request, brand);
+		super(LIST_SHOESS, INSERT_OR_EDIT, Shoes.class);
 	}
 
 	private boolean isShoesMapToBrand(Shoes shoes, Brand brand) {
 		return shoes.getBrand().getBrandId() == brand.getBrandId();
 	}
 
-	private boolean isCreate(String id) {
-		return checkDoString2Int(id) == 0;
+	@Override
+	public Integer parsePkFromReq(HttpServletRequest request) {
+		return checkString2Int(request.getParameter("shoesId"));
 	}
 
-	private int checkDoString2Int(String s) {
-		if (s != null && s.trim().length() > 0) {
-			return Integer.valueOf(s);
-		}
-		return 0;
-	}
-
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+	@Override
+	public Shoes buildEntityByReq(HttpServletRequest request) {
 		Shoes shoes = new Shoes(request.getParameter("shoesName"));
-
-		if (isCreate(request.getParameter("shoesId"))) {
-			shoes.setCategory(request.getParameter("category")).setPrice(checkDoString2Int(request.getParameter("price")))
-					.setSeries(request.getParameter("series")).setBrandById(Integer.valueOf(request.getParameter("brandId")));
-			shoesDao.insert(shoes);
-			response.sendRedirect("/webExercise4/ShoesTableController?action=list&brandId=" + request.getParameter("brandId")); //end post
-			return;
-		}
-
-		shoes.setShoesId(Integer.valueOf(request.getParameter("shoesId"))).setCategory(request.getParameter("category"))
-				.setPrice(Integer.valueOf(request.getParameter("price"))).setSeries(request.getParameter("series"))
-				.setBrandById(Integer.valueOf(request.getParameter("brandId")));
-		shoesDao.update(shoes);
-		response.sendRedirect("/webExercise4/ShoesTableController?action=list&brandId=" + request.getParameter("brandId"));
-
+		shoes.setShoesId(parsePkFromReq(request)).setCategory(request.getParameter("category")).setPrice(Integer.valueOf(request.getParameter("price")))
+				.setSeries(request.getParameter("series")).setBrandById(Integer.valueOf(request.getParameter("brandId")));
+		return shoes;
 	}
+
+	@Override
+	public String dispatchToUpdate(HttpServletRequest request, Shoes shoes) {
+		Brand brand = buildBrand(request);
+		if (brand == null)
+			return null;
+		if (!isShoesMapToBrand(shoes, brand))
+			return dispatchToList(request);
+
+		request.setAttribute("brand", shoes.getBrand());
+		return super.dispatchToUpdate(request, shoes);
+	}
+
+	@Override
+	public String dispatchToList(HttpServletRequest request) {
+		Brand brand = buildBrand(request);
+		if (brand == null)
+			return null;
+		request.setAttribute("brand", brand);
+		request.setAttribute("shoesList", genericDao.findByCondition("brandId =" + String.valueOf(brand.getBrandId())));
+		return LIST_SHOESS;
+	}
+
+	@Override
+	public String buildListUrl(HttpServletRequest request) throws IOException {
+		return super.buildListUrl(request) + request.getParameter("brandId");
+	}
+
+	private Brand buildBrand(HttpServletRequest request) {
+		GenericDao<Brand, Integer> brandDao = new HibernateGenericDaoImpl<Brand, Integer>();
+		Brand brand = null;
+		try {
+			brand = brandDao.getById(Integer.valueOf(request.getParameter("brandId")));
+			if (null == brand)
+				return null;
+
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return brand;
+	}
+
 }

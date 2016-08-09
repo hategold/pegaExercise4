@@ -103,6 +103,16 @@ public class HibernateGenericDaoImpl<T, PK extends Serializable> implements Gene
 		return entityList;
 	}
 
+	@Override
+	public List<T> findByCondition(String s) {
+		startSessionOnly();
+		@SuppressWarnings("unchecked")
+		Query<T> query = session.createQuery("From " + entityType.getName() + "Where " + s);
+		List<T> entityList = query.getResultList();
+		session.close();
+		return entityList;
+	}
+
 	public Transaction getTransaction() {
 		return transaction;
 	}

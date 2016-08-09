@@ -10,20 +10,21 @@ import javax.servlet.http.HttpServletResponse;
 
 import yt.item4.bean.EntityInterface;
 import yt.item4.dao.GenericDao;
+import yt.item4.dao.HibernateGenericDaoImpl;
 
 public abstract class AbstractTableController<T extends EntityInterface, PK extends Serializable> extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	private GenericDao<T, PK> genericDao;
+	protected GenericDao<T, PK> genericDao = new HibernateGenericDaoImpl<T, PK>();
 
-	final Class<T> classType;
+	public final Class<T> classType;
 
 	protected final String INSERT_OR_EDIT_PAGE;
 
 	protected final String LIST_PAGE;
 
-	public AbstractTableController(String listPage, String editPage,Class<T> classType) {
+	public AbstractTableController(String listPage, String editPage, Class<T> classType) {
 		this.INSERT_OR_EDIT_PAGE = editPage;
 		this.LIST_PAGE = listPage;
 		this.classType = classType;
@@ -83,16 +84,16 @@ public abstract class AbstractTableController<T extends EntityInterface, PK exte
 
 		if (isCreate(entity.getId())) {
 			genericDao.insert(entity);
-			redirectToMainpage(response); //end post
+			response.sendRedirect(buildListUrl(request)); //end post
 			return;
 		}
 
 		genericDao.update(entity);
-		redirectToMainpage(response);
+		response.sendRedirect(buildListUrl(request));
 	}
 
-	public void redirectToMainpage(HttpServletResponse response) throws IOException {
-		response.sendRedirect("/webExercise4/BrandTableController?action=list");
+	public String buildListUrl(HttpServletRequest request) throws IOException {
+		return "/webExercise4/" + this.getClass().getName() + "?action=list";
 	}
 
 	private boolean isCreate(int id) {

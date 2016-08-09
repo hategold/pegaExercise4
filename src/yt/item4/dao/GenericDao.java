@@ -17,5 +17,7 @@ public interface GenericDao<T, PK extends Serializable> {
 
 	public List<T> findAll();
 
+	public List<T> findByCondition(String s);
+
 
 }
