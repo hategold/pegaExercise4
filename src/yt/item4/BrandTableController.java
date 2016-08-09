@@ -31,7 +31,7 @@ public class BrandTableController extends HttpServlet {
 
 	public static final String LIST_BRANDS = "/listBrands.jsp";
 
-	public static final String INSERT_OR_EDIT = "/modifyBrand.jsp";
+	public static final String INSERT_OR_EDIT_BRANDS = "/modifyBrand.jsp";
 
 	public static final String COUNTRY_CODE_FILE = "/countryCodeToFullName";
 
@@ -53,26 +53,27 @@ public class BrandTableController extends HttpServlet {
 
 	private String dispatchToUpdate(HttpServletRequest request) {
 		request.setAttribute("countryCodeMap", countryMap);
-		return INSERT_OR_EDIT;
+		return INSERT_OR_EDIT_BRANDS;
 	}
 
 	private String excuteAction(String action, HttpServletRequest request) {
 
 		try {
-			if (ActionEnum.DELETE.name().equalsIgnoreCase(action)) {
-
-				brandDao.deleteBrand(Integer.valueOf(request.getParameter("brandId")));
-				return dispatchToList(request);
-			}
-			if (ActionEnum.EDIT.name().equalsIgnoreCase(action)) {
-				Brand brand = brandDao.selectBrandById(Integer.valueOf(request.getParameter("brandId")));
-				if (brand == null) //got no data
+			switch (ActionEnum.valueOf(action.toUpperCase())) {
+				case DELETE:
+					brandDao.deleteBrand(Integer.valueOf(request.getParameter("brandId")));
 					return dispatchToList(request);
-				request.setAttribute("brand", brand);
-				return dispatchToUpdate(request);
-			}
-			if (ActionEnum.INSERT.name().equalsIgnoreCase(action)) {
-				return dispatchToUpdate(request);
+				case EDIT:
+
+					Brand brand = brandDao.selectBrandById(Integer.valueOf(request.getParameter("brandId")));
+					if (brand == null) //got no data
+						return dispatchToList(request);
+					request.setAttribute("brand", brand);
+					return dispatchToUpdate(request);
+				case INSERT:
+					return dispatchToUpdate(request);
+				default:
+					break;
 			}
 		} catch (NullPointerException e) {
 			e.printStackTrace();
@@ -96,7 +97,7 @@ public class BrandTableController extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		Brand brand = new Brand(request.getParameter("brandName"));
-
+		
 		if (isCreate(request.getParameter("brandId"))) {
 			brand.setCountry(request.getParameter("country")).setWebsite(request.getParameter("website"));
 			brandDao.insertBrand(brand);
