@@ -2,20 +2,13 @@ package yt.item4;
 
 import java.io.IOException;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import yt.item4.bean.Brand;
 import yt.item4.bean.Shoes;
-import yt.item4.dao.BrandDao;
 import yt.item4.dao.GenericDao;
 import yt.item4.dao.HibernateGenericDaoImpl;
-import yt.item4.dao.ShoesDao;
-import yt.item4.factory.HibernateDaoFactory;
-import yt.item4.factory.IDaoFactory;
 
 /**
  * Servlet implementation class ShoesTableController
@@ -46,16 +39,21 @@ public class ShoesTableController extends AbstractTableController<Shoes, Integer
 	public Shoes buildEntityByReq(HttpServletRequest request) {
 		Shoes shoes = new Shoes(request.getParameter("shoesName"));
 		shoes.setShoesId(parsePkFromReq(request)).setCategory(request.getParameter("category")).setPrice(Integer.valueOf(request.getParameter("price")))
-				.setSeries(request.getParameter("series")).setBrandById(Integer.valueOf(request.getParameter("brandId")));
+				.setSeries(request.getParameter("series")).setBrand(buildBrand(request));
 		return shoes;
 	}
 
 	@Override
 	public String dispatchToUpdate(HttpServletRequest request, Shoes shoes) {
 		Brand brand = buildBrand(request);
+
+		System.out.println(brand);
+
 		if (brand == null)
 			return null;
-		if (!isShoesMapToBrand(shoes, brand))
+		if (shoes == null)
+			shoes = new Shoes().setBrand(brand);
+		if (shoes != null && !isShoesMapToBrand(shoes, brand))
 			return dispatchToList(request);
 
 		request.setAttribute("brand", shoes.getBrand());
@@ -74,11 +72,11 @@ public class ShoesTableController extends AbstractTableController<Shoes, Integer
 
 	@Override
 	public String buildListUrl(HttpServletRequest request) throws IOException {
-		return super.buildListUrl(request) + request.getParameter("brandId");
+		return super.buildListUrl(request) + "&brandId=" + request.getParameter("brandId");
 	}
 
 	private Brand buildBrand(HttpServletRequest request) {
-		GenericDao<Brand, Integer> brandDao = new HibernateGenericDaoImpl<Brand, Integer>();
+		GenericDao<Brand, Integer> brandDao = new HibernateGenericDaoImpl<Brand, Integer>(Brand.class);
 		Brand brand = null;
 		try {
 			brand = brandDao.getById(Integer.valueOf(request.getParameter("brandId")));

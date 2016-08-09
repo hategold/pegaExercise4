@@ -16,7 +16,7 @@ public abstract class AbstractTableController<T extends EntityInterface, PK exte
 
 	private static final long serialVersionUID = 1L;
 
-	protected GenericDao<T, PK> genericDao = new HibernateGenericDaoImpl<T, PK>();
+	protected GenericDao<T, PK> genericDao;
 
 	public final Class<T> classType;
 
@@ -28,6 +28,7 @@ public abstract class AbstractTableController<T extends EntityInterface, PK exte
 		this.INSERT_OR_EDIT_PAGE = editPage;
 		this.LIST_PAGE = listPage;
 		this.classType = classType;
+		genericDao = new HibernateGenericDaoImpl<T, PK>(classType);
 	}
 
 	public abstract PK parsePkFromReq(HttpServletRequest request);
@@ -35,14 +36,13 @@ public abstract class AbstractTableController<T extends EntityInterface, PK exte
 	public abstract T buildEntityByReq(HttpServletRequest request);
 
 	public String dispatchToList(HttpServletRequest request) {
-		request.setAttribute(classType.getName().toLowerCase() + "List", genericDao.findAll());
+		request.setAttribute(classType.getSimpleName().toLowerCase() + "List", genericDao.findAll());
 		return LIST_PAGE;
 	}
 
 	public String dispatchToUpdate(HttpServletRequest request, T entity) {
-
 		if (entity != null)
-			request.setAttribute(entity.getClass().getName(), entity);
+			request.setAttribute(entity.getClass().getSimpleName().toLowerCase(), entity);
 		return INSERT_OR_EDIT_PAGE;
 	};
 
@@ -63,7 +63,9 @@ public abstract class AbstractTableController<T extends EntityInterface, PK exte
 					genericDao.deleteById(parsePkFromReq(request));
 					return dispatchToList(request);
 				case EDIT:
+
 					T entity = genericDao.getById(parsePkFromReq(request));
+
 					if (entity == null) //got no data
 						return dispatchToList(request);
 
@@ -80,6 +82,7 @@ public abstract class AbstractTableController<T extends EntityInterface, PK exte
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
 		T entity = buildEntityByReq(request);
 
 		if (isCreate(entity.getId())) {
@@ -93,7 +96,7 @@ public abstract class AbstractTableController<T extends EntityInterface, PK exte
 	}
 
 	public String buildListUrl(HttpServletRequest request) throws IOException {
-		return "/webExercise4/" + this.getClass().getName() + "?action=list";
+		return "/webExercise4/" + this.getClass().getSimpleName() + "?action=list";
 	}
 
 	private boolean isCreate(int id) {

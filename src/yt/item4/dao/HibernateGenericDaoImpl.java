@@ -20,9 +20,10 @@ public class HibernateGenericDaoImpl<T, PK extends Serializable> implements Gene
 
 	private Class<T> entityType;
 
-	public HibernateGenericDaoImpl() {
+	public HibernateGenericDaoImpl(Class<T> entityType) {
 		Configuration config = new Configuration().configure();
 		this.sessionFactory = config.buildSessionFactory();
+		this.entityType = entityType;
 	}
 
 	protected void startTransaction() throws HibernateException {
@@ -32,10 +33,6 @@ public class HibernateGenericDaoImpl<T, PK extends Serializable> implements Gene
 
 	protected void startSessionOnly() {
 		session = sessionFactory.openSession();
-	}
-
-	public HibernateGenericDaoImpl(Class<T> entityType) {
-		this.entityType = entityType;
 	}
 
 	@Override
@@ -77,6 +74,7 @@ public class HibernateGenericDaoImpl<T, PK extends Serializable> implements Gene
 	@Override
 	public boolean update(T t) {
 		startTransaction();
+		System.out.println(t);
 		session.update(t);
 		transaction.commit();
 		session.close();
@@ -107,7 +105,7 @@ public class HibernateGenericDaoImpl<T, PK extends Serializable> implements Gene
 	public List<T> findByCondition(String s) {
 		startSessionOnly();
 		@SuppressWarnings("unchecked")
-		Query<T> query = session.createQuery("From " + entityType.getName() + "Where " + s);
+		Query<T> query = session.createQuery("From " + entityType.getName() + " Where " + s);
 		List<T> entityList = query.getResultList();
 		session.close();
 		return entityList;

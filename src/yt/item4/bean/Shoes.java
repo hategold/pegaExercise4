@@ -2,7 +2,7 @@ package yt.item4.bean;
 
 import java.io.Serializable;
 
-public class Shoes implements Serializable,EntityInterface{
+public class Shoes implements Serializable, EntityInterface {
 
 	private static final long serialVersionUID = 1L;
 
@@ -88,5 +88,11 @@ public class Shoes implements Serializable,EntityInterface{
 	@Override
 	public int getId() {
 		return this.shoesId;
+	}
+
+	@Override
+	public String toString() {
+		return shoesId + " " + shoesName + " " + price + " " + brand;
+
 	}
 }
