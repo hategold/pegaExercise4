@@ -1,0 +1,108 @@
+package yt.item4;
+
+import java.io.IOException;
+import java.io.Serializable;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import yt.item4.bean.EntityInterface;
+import yt.item4.dao.GenericDao;
+
+public abstract class AbstractTableController<T extends EntityInterface, PK extends Serializable> extends HttpServlet {
+
+	private static final long serialVersionUID = 1L;
+
+	private GenericDao<T, PK> genericDao;
+
+	final Class<T> classType;
+
+	protected final String INSERT_OR_EDIT_PAGE;
+
+	protected final String LIST_PAGE;
+
+	public AbstractTableController(String listPage, String editPage,Class<T> classType) {
+		this.INSERT_OR_EDIT_PAGE = editPage;
+		this.LIST_PAGE = listPage;
+		this.classType = classType;
+	}
+
+	public abstract PK parsePkFromReq(HttpServletRequest request);
+
+	public abstract T buildEntityByReq(HttpServletRequest request);
+
+	public String dispatchToList(HttpServletRequest request) {
+		request.setAttribute(classType.getName().toLowerCase() + "List", genericDao.findAll());
+		return LIST_PAGE;
+	}
+
+	public String dispatchToUpdate(HttpServletRequest request, T entity) {
+
+		if (entity != null)
+			request.setAttribute(entity.getClass().getName(), entity);
+		return INSERT_OR_EDIT_PAGE;
+	};
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String forward = excuteAction(request.getParameter("action"), request);
+		if (null == forward) {
+			response.sendRedirect("/webExercise4/index.jsp"); // set to main page
+			return;
+		}
+		request.getRequestDispatcher(forward).forward(request, response);
+	}
+
+	protected String excuteAction(String action, HttpServletRequest request) {
+		//findbyWHEREstatement
+		try {
+			switch (ActionEnum.valueOf(action.toUpperCase())) {
+				case DELETE:
+					genericDao.deleteById(parsePkFromReq(request));
+					return dispatchToList(request);
+				case EDIT:
+					T entity = genericDao.getById(parsePkFromReq(request));
+					if (entity == null) //got no data
+						return dispatchToList(request);
+
+					return dispatchToUpdate(request, entity);
+				case INSERT:
+					return dispatchToUpdate(request, null);
+				default:
+					break;
+			}
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		}
+		return dispatchToList(request);
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		T entity = buildEntityByReq(request);
+
+		if (isCreate(entity.getId())) {
+			genericDao.insert(entity);
+			redirectToMainpage(response); //end post
+			return;
+		}
+
+		genericDao.update(entity);
+		redirectToMainpage(response);
+	}
+
+	public void redirectToMainpage(HttpServletResponse response) throws IOException {
+		response.sendRedirect("/webExercise4/BrandTableController?action=list");
+	}
+
+	private boolean isCreate(int id) {
+		return id == 0;
+	}
+
+	protected int checkString2Int(String s) {
+		if (s != null && s.trim().length() > 0) {
+			return Integer.valueOf(s);
+		}
+		return 0;
+	}
+}

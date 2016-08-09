@@ -3,7 +3,7 @@ package yt.item4.bean;
 import java.io.Serializable;
 import java.util.Set;
 
-public class Brand implements Serializable {
+public class Brand implements Serializable, EntityInterface {
 
 	private static final long serialVersionUID = 1L;
 
@@ -91,6 +91,11 @@ public class Brand implements Serializable {
 
 	public void removeShoes(Shoes shoes) {
 		shoesGroup.remove(shoes);
+	}
+
+	@Override
+	public int getId() {
+		return this.brandId;
 	}
 
 }
