@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.sun.xml.internal.ws.util.StringUtils;
+
 import yt.item4.bean.EntityInterface;
 import yt.item4.dao.GenericDao;
 import yt.item4.dao.HibernateGenericDaoImpl;
@@ -28,16 +30,18 @@ public abstract class AbstractTableController<T extends EntityInterface, PK exte
 		this.INSERT_OR_EDIT_PAGE = editPage;
 		this.LIST_PAGE = listPage;
 		this.classType = classType;
-		genericDao = new HibernateGenericDaoImpl<T, PK>(classType);
+		this.genericDao = new HibernateGenericDaoImpl<T, PK>(classType);
 	}
 
 	public abstract PK parsePkFromReq(HttpServletRequest request);
 
 	public abstract T buildEntityByReq(HttpServletRequest request);
 
+	public abstract String getListPage();
+
 	public String dispatchToList(HttpServletRequest request) {
 		request.setAttribute(classType.getSimpleName().toLowerCase() + "List", genericDao.findAll());
-		return LIST_PAGE;
+		return getListPage();//TODO check 
 	}
 
 	public String dispatchToUpdate(HttpServletRequest request, T entity) {
@@ -96,6 +100,7 @@ public abstract class AbstractTableController<T extends EntityInterface, PK exte
 	}
 
 	public String buildListUrl(HttpServletRequest request) throws IOException {
+		//request.getContextPath() => /webExercise4/
 		return "/webExercise4/" + this.getClass().getSimpleName() + "?action=list";
 	}
 
@@ -104,9 +109,9 @@ public abstract class AbstractTableController<T extends EntityInterface, PK exte
 	}
 
 	protected int checkString2Int(String s) {
-		if (s != null && s.trim().length() > 0) {
+		if (s != null && s.trim().length() > 0)
 			return Integer.valueOf(s);
-		}
+
 		return 0;
 	}
 }

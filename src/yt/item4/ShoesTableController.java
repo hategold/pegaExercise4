@@ -47,13 +47,13 @@ public class ShoesTableController extends AbstractTableController<Shoes, Integer
 	public String dispatchToUpdate(HttpServletRequest request, Shoes shoes) {
 		Brand brand = buildBrand(request);
 
-		System.out.println(brand);
-
 		if (brand == null)
 			return null;
+
 		if (shoes == null)
 			shoes = new Shoes().setBrand(brand);
-		if (shoes != null && !isShoesMapToBrand(shoes, brand))
+
+		if (!isShoesMapToBrand(shoes, brand))
 			return dispatchToList(request);
 
 		request.setAttribute("brand", shoes.getBrand());
