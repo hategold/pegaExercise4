@@ -10,8 +10,6 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
 
-import yt.item4.BrandTableController;
-
 public class HibernateGenericDaoImpl<T, PK extends Serializable> implements GenericDao<T, PK> {
 
 	private SessionFactory sessionFactory;
@@ -22,16 +20,11 @@ public class HibernateGenericDaoImpl<T, PK extends Serializable> implements Gene
 
 	private Class<T> entityType;
 
-	public static final String AA;
-	static {
-		AA = BrandTableController.COUNTRY_CODE_FILE;
-	};
-
 	public HibernateGenericDaoImpl(Class<T> entityType) {
 		Configuration config = new Configuration().configure();
 		this.sessionFactory = config.buildSessionFactory();
 		this.entityType = entityType;
-
+		
 	}
 
 	protected void startTransaction() throws HibernateException {

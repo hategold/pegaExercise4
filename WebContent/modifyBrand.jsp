@@ -2,7 +2,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-
+<%@page import="yt.item4.CountryCode"%>
+<%@page import="yt.item4.factory.CountryMapFactory"%>
+<%@page import="java.util.Map"%>
+<%
+	final String COUNTRY_CODE_FILE = "countryCodeToFullName";
+	Map<CountryCode, String> countryCodeMap = (new CountryMapFactory()).createCountryMap(COUNTRY_CODE_FILE);
+	request.setAttribute("countryCodeMap", countryCodeMap);
+%>
 <html>
 <head>
 
@@ -42,6 +49,7 @@
 						</div>
 						<div class="form-group">
 							<label>Country</label><select class="form-control" name="country">
+
 								<c:forEach items="${countryCodeMap}" var="countryCode">
 									<option value=${countryCode.key
 										}
