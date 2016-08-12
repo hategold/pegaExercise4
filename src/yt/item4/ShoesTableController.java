@@ -55,7 +55,7 @@ public class ShoesTableController extends AbstractTableController<Shoes, Integer
 		if (brand == null)
 			return super.dispatchToList(request);
 		request.setAttribute("brand", brand);
-		request.setAttribute("shoesList", genericDao.findByCondition("brandId =" + String.valueOf(brand.getBrandId())));
+		request.setAttribute("shoesList", genericDao.findByFk("brand", brand.getBrandId()));
 		return LIST_PAGE;
 	}
 

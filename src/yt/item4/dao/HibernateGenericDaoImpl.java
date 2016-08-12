@@ -3,11 +3,14 @@ package yt.item4.dao;
 import java.io.Serializable;
 import java.util.List;
 
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
 
 public class HibernateGenericDaoImpl<T, PK extends Serializable> implements GenericDao<T, PK> {
@@ -24,7 +27,7 @@ public class HibernateGenericDaoImpl<T, PK extends Serializable> implements Gene
 		Configuration config = new Configuration().configure();
 		this.sessionFactory = config.buildSessionFactory();
 		this.entityType = entityType;
-		
+
 	}
 
 	protected void startTransaction() throws HibernateException {
@@ -103,11 +106,12 @@ public class HibernateGenericDaoImpl<T, PK extends Serializable> implements Gene
 	}
 
 	@Override
-	public List<T> findByCondition(String s) {
-		startSessionOnly();
+	public List<T> findByFk(String fkFieldName, Object fkId) {
+		startSessionOnly();//session deprecated criteria
+		DetachedCriteria dCriteria = DetachedCriteria.forClass(entityType);
+		Criteria criteria = dCriteria.getExecutableCriteria(session);
 		@SuppressWarnings("unchecked")
-		Query<T> query = session.createQuery("From " + entityType.getName() + " Where " + s);
-		List<T> entityList = query.getResultList();
+		List<T> entityList = criteria.createCriteria(fkFieldName).add(Restrictions.idEq(fkId)).list();
 		session.close();
 		return entityList;
 	}
