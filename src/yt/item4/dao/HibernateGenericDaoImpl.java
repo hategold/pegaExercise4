@@ -98,8 +98,7 @@ public class HibernateGenericDaoImpl<T, PK extends Serializable> implements Gene
 	public List<T> findAll() {
 		startSessionOnly();
 		@SuppressWarnings("unchecked")
-		Query<T> query = session.createQuery("From " + entityType.getName());
-		List<T> entityList = query.getResultList();
+		List<T> entityList = DetachedCriteria.forClass(entityType).getExecutableCriteria(session).list();
 		session.close();
 
 		return entityList;
@@ -108,8 +107,7 @@ public class HibernateGenericDaoImpl<T, PK extends Serializable> implements Gene
 	@Override
 	public List<T> findByFk(String fkFieldName, Object fkId) {
 		startSessionOnly();//session deprecated criteria
-		DetachedCriteria dCriteria = DetachedCriteria.forClass(entityType);
-		Criteria criteria = dCriteria.getExecutableCriteria(session);
+		Criteria criteria = DetachedCriteria.forClass(entityType).getExecutableCriteria(session);
 		@SuppressWarnings("unchecked")
 		List<T> entityList = criteria.createCriteria(fkFieldName).add(Restrictions.idEq(fkId)).list();
 		session.close();
