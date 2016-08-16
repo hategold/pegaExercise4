@@ -30,6 +30,36 @@ public class ShoesTableController extends AbstractTableController<Shoes, Integer
 	}
 
 	@Override
+	public String buildListUrl(HttpServletRequest request) throws IOException {
+		return super.buildListUrl(request) + "&brandId=" + request.getParameter("brandId");
+	}
+
+	@Override
+	public String dispatchToList(HttpServletRequest request) {
+		Brand brand = buildBrand(request);
+		if (brand == null)
+			return super.dispatchToList(request);
+		request.setAttribute("brand", brand);
+		request.setAttribute("shoesList", genericDao.findByFk("brand", brand.getBrandId()));
+		return LIST_PAGE;
+	}
+
+	private Brand buildBrand(HttpServletRequest request) {
+		GenericDao<Brand, Integer> brandDao = new HibernateGenericDaoImpl<Brand, Integer>(Brand.class);
+		Brand brand = null;
+		try {
+			brand = brandDao.getById(Integer.valueOf(request.getParameter("brandId")));
+			if (null == brand)
+				return null;
+
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return brand;
+	}
+
+	@Override
 	public String dispatchToUpdate(HttpServletRequest request, Shoes shoes) {
 		Brand brand = buildBrand(request);
 
@@ -47,36 +77,6 @@ public class ShoesTableController extends AbstractTableController<Shoes, Integer
 
 		request.setAttribute("brand", shoes.getBrand());
 		return super.dispatchToUpdate(request, shoes);
-	}
-
-	@Override
-	public String dispatchToList(HttpServletRequest request) {
-		Brand brand = buildBrand(request);
-		if (brand == null)
-			return super.dispatchToList(request);
-		request.setAttribute("brand", brand);
-		request.setAttribute("shoesList", genericDao.findByFk("brand", brand.getBrandId()));
-		return LIST_PAGE;
-	}
-
-	@Override
-	public String buildListUrl(HttpServletRequest request) throws IOException {
-		return super.buildListUrl(request) + "&brandId=" + request.getParameter("brandId");
-	}
-
-	private Brand buildBrand(HttpServletRequest request) {
-		GenericDao<Brand, Integer> brandDao = new HibernateGenericDaoImpl<Brand, Integer>(Brand.class);
-		Brand brand = null;
-		try {
-			brand = brandDao.getById(Integer.valueOf(request.getParameter("brandId")));
-			if (null == brand)
-				return null;
-
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
-			return null;
-		}
-		return brand;
 	}
 
 }
