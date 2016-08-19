@@ -86,7 +86,7 @@ public class Shoes implements Serializable, EntityInterface {
 	}
 
 	@Override
-	public int getId() {
+	public Integer getId() {
 		return this.shoesId;
 	}
 

@@ -58,6 +58,7 @@ public abstract class AbstractTableController<T extends EntityInterface, PK exte
 			} catch (IllegalArgumentException | IllegalAccessException e) {
 				e.printStackTrace();
 				System.out.println(field.getName());
+				System.out.println(request.getParameter(field.getName()));
 			}
 		}
 		return entity;
@@ -70,7 +71,7 @@ public abstract class AbstractTableController<T extends EntityInterface, PK exte
 
 	public String dispatchToUpdate(HttpServletRequest request, T entity) {
 		if (entity != null)
-			request.setAttribute(entity.getClass().getSimpleName().toLowerCase(), entity);
+			request.setAttribute(classType.getSimpleName().toLowerCase(), entity);
 		return INSERT_OR_EDIT_PAGE;
 	};
 
@@ -92,8 +93,7 @@ public abstract class AbstractTableController<T extends EntityInterface, PK exte
 					return dispatchToList(request);
 				case EDIT:
 
-					T entity = genericDao.getById(parsePkFromReq(request));
-
+					T entity = (T) genericDao.getById(parsePkFromReq(request));
 					if (entity == null) //got no data
 						return dispatchToList(request);
 

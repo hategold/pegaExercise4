@@ -15,4 +15,5 @@ public interface BrandDao {
 	public boolean insertBrand(Brand brand);
 
 	public List<Brand> readFullBrands();
+	
 }

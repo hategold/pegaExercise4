@@ -39,7 +39,7 @@ public class ShoesTableController extends AbstractTableController<Shoes, Integer
 		Brand brand = buildBrand(request);
 		if (brand == null)
 			return super.dispatchToList(request);
-		request.setAttribute("brand", brand);
+		request.setAttribute("brand", brand);//todo getbrand then get shoes list sort by name => sql? db done
 		request.setAttribute("shoesList", genericDao.findByFk("brand", brand.getBrandId()));
 		return LIST_PAGE;
 	}
@@ -49,8 +49,7 @@ public class ShoesTableController extends AbstractTableController<Shoes, Integer
 		Brand brand = null;
 		try {
 			brand = brandDao.getById(Integer.valueOf(request.getParameter("brandId")));
-			if (null == brand)
-				return null;
+//			System.out.println(brand.getShoesGroup().toArray()[0]);
 
 		} catch (NumberFormatException e) {
 			e.printStackTrace();

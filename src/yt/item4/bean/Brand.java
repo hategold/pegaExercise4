@@ -73,7 +73,7 @@ public class Brand implements Serializable, EntityInterface {
 
 	@Override
 	public String toString() {
-		return brandId + " " + brandName + " " + website + " " + country;
+		return brandId + " " + brandName + " " + website + " " + country + " " + shoesGroup.size();
 
 	}
 
@@ -94,7 +94,7 @@ public class Brand implements Serializable, EntityInterface {
 	}
 
 	@Override
-	public int getId() {
+	public Integer getId() {
 		return this.brandId;
 	}
 

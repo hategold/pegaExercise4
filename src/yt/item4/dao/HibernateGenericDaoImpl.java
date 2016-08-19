@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -12,6 +13,8 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
+
+import yt.item4.bean.EntityInterface;
 
 public class HibernateGenericDaoImpl<T, PK extends Serializable> implements GenericDao<T, PK> {
 
@@ -43,6 +46,8 @@ public class HibernateGenericDaoImpl<T, PK extends Serializable> implements Gene
 	public T getById(PK Id) {
 		startSessionOnly();
 		T selectedEntity = (T) session.get(entityType, Id);
+//		Hibernate.initialize(selectedEntity.toString());
+//		System.out.println(selectedEntity);
 		session.close();
 		return selectedEntity;
 	}
@@ -78,7 +83,8 @@ public class HibernateGenericDaoImpl<T, PK extends Serializable> implements Gene
 	@Override
 	public boolean update(T t) {
 		startTransaction();
-		System.out.println(t);
+		
+//		session.merge(t);
 		session.update(t);
 		transaction.commit();
 		session.close();
@@ -113,6 +119,17 @@ public class HibernateGenericDaoImpl<T, PK extends Serializable> implements Gene
 		session.close();
 		return entityList;
 	}
+
+//	@SuppressWarnings({ "unchecked", "rawtypes" })
+//	public <F extends EntityInterface, FK extends Serializable> List<T> findByFk(F fkEntity, FK fkId){
+//		startSessionOnly();
+//		GenericDao fkDao = new HibernateGenericDaoImpl<F,FK>((Class<F>) fkEntity.getClass());
+//		fkDao.getById(fkId);
+//		
+//		session.close();
+//		return null;
+//		
+//		}
 
 	public Transaction getTransaction() {
 		return transaction;
